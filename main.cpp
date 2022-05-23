@@ -10,7 +10,7 @@ int main(int argc, char **argv)
     auto app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
 
 
-    ExampleWindow win;
+    MainWindow win;
 
     // Gtk::Window win;
     // win.set_title("Cairomm Clock");

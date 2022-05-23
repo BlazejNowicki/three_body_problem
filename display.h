@@ -3,11 +3,11 @@
 
 #include <gtkmm/drawingarea.h>
 
-class Clock : public Gtk::DrawingArea
+class Display : public Gtk::DrawingArea
 {
 public:
-  Clock();
-  virtual ~Clock();
+  Display();
+  virtual ~Display();
   void toggle_loop();
 
 protected:

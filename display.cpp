@@ -4,24 +4,24 @@
 #include <glibmm/main.h>
 #include "display.h"
 
-Clock::Clock()
+Display::Display()
     : m_radius(0.42), m_line_width(0.05), running(false)
 {
     toggle_loop();
 }
 
-void Clock::toggle_loop()
+void Display::toggle_loop()
 {
     running = !running;
     if (running)
-        Glib::signal_timeout().connect(sigc::mem_fun(*this, &Clock::on_timeout), 100);
+        Glib::signal_timeout().connect(sigc::mem_fun(*this, &Display::on_timeout), 100);
 }
 
-Clock::~Clock()
+Display::~Display()
 {
 }
 
-bool Clock::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
+bool Display::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 {
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
@@ -45,7 +45,7 @@ bool Clock::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     cr->stroke_preserve();
     cr->clip();
 
-    // clock ticks
+    // Display ticks
     for (int i = 0; i < 12; i++)
     {
         double inset = 0.05;
@@ -74,7 +74,7 @@ bool Clock::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     time(&rawtime);
     struct tm *timeinfo = localtime(&rawtime);
 
-    // compute the angles of the indicators of our clock
+    // compute the angles of the indicators of our Display
     double minutes = timeinfo->tm_min * M_PI / 30;
     double hours = timeinfo->tm_hour * M_PI / 6;
     double seconds = timeinfo->tm_sec * M_PI / 30;
@@ -114,9 +114,9 @@ bool Clock::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     return true;
 }
 
-bool Clock::on_timeout()
+bool Display::on_timeout()
 {
-    // force our program to redraw the entire clock.
+    // force our program to redraw the entire Display.
     if (!running)
         return false;
     auto win = get_window();
