@@ -3,6 +3,7 @@
 
 #include <gtkmm.h>
 #include "display.h"
+#include "config.h"
 
 class MainWindow : public Gtk::Window
 {
@@ -12,10 +13,8 @@ public:
 
 protected:
     Gtk::Box m_VBox;
-    Gtk::Label m_Label;
-    Gtk::Label m_Label2;
     Display display;
-    Gtk::Button toggle_button;
+    ConfigBox config;
 
     void handle_toggle();
 };
