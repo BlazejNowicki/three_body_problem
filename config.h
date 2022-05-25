@@ -18,7 +18,10 @@ protected:
     Gtk::Box globals;
     Gtk::Label g_const_label;
     Gtk::SpinButton g_const_input;
+    Gtk::Label delay_label;
+    Gtk::SpinButton delay_input;
     Gtk::Button submit_button;
+
 };
 
 #endif // CONFIG_BOX

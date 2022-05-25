@@ -3,9 +3,10 @@
 #include <cairomm/context.h>
 #include <glibmm/main.h>
 #include "display.h"
+#include <iostream>
 
 Display::Display()
-    : m_radius(0.42), m_line_width(0.05), running(false)
+    : m_radius(0.42), m_line_width(0.05), running(false), engine()
 {
     toggle_loop();
 }
@@ -14,7 +15,7 @@ void Display::toggle_loop()
 {
     running = !running;
     if (running)
-        Glib::signal_timeout().connect(sigc::mem_fun(*this, &Display::on_timeout), 100);
+        Glib::signal_timeout().connect(sigc::mem_fun(*this, &Display::on_timeout), 16);
 }
 
 Display::~Display()
@@ -23,92 +24,35 @@ Display::~Display()
 
 bool Display::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 {
+    Vector position;
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
     const int height = allocation.get_height();
 
-    // scale to unit square and translate (0, 0) to be (0.5, 0.5), i.e.
-    // the center of the window
-    cr->scale(width, height);
-    cr->translate(0.5, 0.5);
+    cr->translate(width/2, height/2);
     cr->set_line_width(m_line_width);
 
     cr->save();
-    cr->set_source_rgba(0.337, 0.612, 0.117, 0.9); // green
+    cr->set_source_rgba(0.129, 0.16, 0.187, 1);
     cr->paint();
     cr->restore();
-    cr->arc(0, 0, m_radius, 0, 2 * M_PI);
-    cr->save();
+
     cr->set_source_rgba(1.0, 1.0, 1.0, 0.8);
-    cr->fill_preserve();
-    cr->restore();
-    cr->stroke_preserve();
-    cr->clip();
 
-    // Display ticks
-    for (int i = 0; i < 12; i++)
-    {
-        double inset = 0.05;
-
-        cr->save();
-        cr->set_line_cap(Cairo::LINE_CAP_ROUND);
-
-        if (i % 3 != 0)
-        {
-            inset *= 0.8;
-            cr->set_line_width(0.03);
-        }
-
-        cr->move_to(
-            (m_radius - inset) * cos(i * M_PI / 6),
-            (m_radius - inset) * sin(i * M_PI / 6));
-        cr->line_to(
-            m_radius * cos(i * M_PI / 6),
-            m_radius * sin(i * M_PI / 6));
-        cr->stroke();
-        cr->restore(); /* stack-pen-size */
-    }
-
-    // store the current time
-    time_t rawtime;
-    time(&rawtime);
-    struct tm *timeinfo = localtime(&rawtime);
-
-    // compute the angles of the indicators of our Display
-    double minutes = timeinfo->tm_min * M_PI / 30;
-    double hours = timeinfo->tm_hour * M_PI / 6;
-    double seconds = timeinfo->tm_sec * M_PI / 30;
 
     cr->save();
-    cr->set_line_cap(Cairo::LINE_CAP_ROUND);
+    position = engine.getCoordinates(0);
+    cr->arc(position.x, -position.y, 15, 0, 2 * M_PI);
+    cr->fill();
 
-    // draw the seconds hand
     cr->save();
-    cr->set_line_width(m_line_width / 3);
-    cr->set_source_rgba(0.7, 0.7, 0.7, 0.8); // gray
-    cr->move_to(0, 0);
-    cr->line_to(sin(seconds) * (m_radius * 0.9),
-                -cos(seconds) * (m_radius * 0.9));
-    cr->stroke();
-    cr->restore();
+    position = engine.getCoordinates(1);
+    cr->arc(position.x, -position.y, 15, 0, 2 * M_PI);
+    cr->fill();
 
-    // draw the minutes hand
-    cr->set_source_rgba(0.117, 0.337, 0.612, 0.9); // blue
-    cr->move_to(0, 0);
-    cr->line_to(sin(minutes + seconds / 60) * (m_radius * 0.8),
-                -cos(minutes + seconds / 60) * (m_radius * 0.8));
-    cr->stroke();
-
-    // draw the hours hand
-    cr->set_source_rgba(0.337, 0.612, 0.117, 0.9); // green
-    cr->move_to(0, 0);
-    cr->line_to(sin(hours + minutes / 12.0) * (m_radius * 0.5),
-                -cos(hours + minutes / 12.0) * (m_radius * 0.5));
-    cr->stroke();
-    cr->restore();
-
-    // draw a little dot in the middle
-    cr->arc(0, 0, m_line_width / 3.0, 0, 2 * M_PI);
+    cr->save();
+    position = engine.getCoordinates(2);
+    cr->arc(position.x, -position.y, 15, 0, 2 * M_PI);
     cr->fill();
 
     return true;
@@ -119,6 +63,9 @@ bool Display::on_timeout()
     // force our program to redraw the entire Display.
     if (!running)
         return false;
+
+    engine.updateCoordinates();
+
     auto win = get_window();
     if (win)
     {
