@@ -15,6 +15,11 @@ protected:
     Gtk::Label vel_x_label;
     Gtk::Label vel_y_label;
     Gtk::Label mass_label;
+    Gtk::SpinButton pos_x_input;
+    Gtk::SpinButton pos_y_input;
+    Gtk::SpinButton vel_x_input;
+    Gtk::SpinButton vel_y_input;
+    Gtk::SpinButton mass_input;
 };
 
 #endif // PARAMS_INPUT
