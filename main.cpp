@@ -11,14 +11,5 @@ int main(int argc, char **argv)
 
 
     MainWindow win;
-
-    // Gtk::Window win;
-    // win.set_title("Cairomm Clock");
-    // Gtk::Box box;
-
-    // Clock c;
-    // win.add(c);
-    // c.show();
-
     return app->run(win);
 }

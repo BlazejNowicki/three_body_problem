@@ -6,16 +6,14 @@
 #include <iostream>
 
 Display::Display()
-    : m_radius(0.42), m_line_width(0.05), running(false), engine()
-{
-    toggle_loop();
+    : running(false), engine(NULL)
+{   
+    // toggle_loop();
 }
 
-void Display::toggle_loop()
+void Display::start_loop()
 {
-    running = !running;
-    if (running)
-        Glib::signal_timeout().connect(sigc::mem_fun(*this, &Display::on_timeout), 16);
+    Glib::signal_timeout().connect(sigc::mem_fun(*this, &Display::on_timeout), 16);
 }
 
 Display::~Display()
@@ -24,34 +22,36 @@ Display::~Display()
 
 bool Display::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
 {
+
     Vector position;
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
     const int height = allocation.get_height();
 
-    cr->translate(width/2, height/2);
-    cr->set_line_width(m_line_width);
+    cr->translate(width / 2, height / 2);
+    cr->set_line_width(0.05);
 
     cr->save();
     cr->set_source_rgba(0.129, 0.16, 0.187, 1);
     cr->paint();
     cr->restore();
 
+    if (engine == NULL) return true;
+
     cr->set_source_rgba(1.0, 1.0, 1.0, 0.8);
 
-
     cr->save();
-    position = engine.getCoordinates(0);
+    position = engine->getCoordinates(0);
     cr->arc(position.x, -position.y, 15, 0, 2 * M_PI);
     cr->fill();
 
     cr->save();
-    position = engine.getCoordinates(1);
+    position = engine->getCoordinates(1);
     cr->arc(position.x, -position.y, 15, 0, 2 * M_PI);
     cr->fill();
 
     cr->save();
-    position = engine.getCoordinates(2);
+    position = engine->getCoordinates(2);
     cr->arc(position.x, -position.y, 15, 0, 2 * M_PI);
     cr->fill();
 
@@ -64,7 +64,7 @@ bool Display::on_timeout()
     if (!running)
         return false;
 
-    engine.updateCoordinates();
+    engine->updateCoordinates();
 
     auto win = get_window();
     if (win)

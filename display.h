@@ -9,17 +9,18 @@ class Display : public Gtk::DrawingArea
 public:
     Display();
     virtual ~Display();
-    void toggle_loop();
+
+    void start_loop();
+    void setEngine(std::shared_ptr<Engine> engine);
 
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context> &cr) override;
 
     bool on_timeout();
 
-    Engine engine;
+    std::shared_ptr<Engine> engine;
+    
 
-    double m_radius;
-    double m_line_width;
     bool running;
 };
 

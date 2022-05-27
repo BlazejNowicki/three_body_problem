@@ -1,9 +1,9 @@
-#ifndef GTKMM_EXAMPLEWINDOW_H
-#define GTKMM_EXAMPLEWINDOW_H
+#ifndef WINDOW_H
+#define WINDOW_H
 
 #include <gtkmm.h>
 #include "display.h"
-#include "config.h"
+#include "paramsinput.h"
 
 class MainWindow : public Gtk::Window
 {
@@ -13,10 +13,21 @@ public:
 
 protected:
     Gtk::Box m_VBox;
+    Gtk::Box m_HBox;
     Display display;
-    ConfigBox config;
 
-    void handle_toggle();
+    ParamsInput first_obj;
+    ParamsInput second_obj;
+    ParamsInput third_obj;
+
+    Gtk::Box globals;
+    Gtk::Label g_const_label;
+    Gtk::SpinButton g_const_input;
+    Gtk::Label delay_label;
+    Gtk::SpinButton delay_input;
+    Gtk::Button submit_button;
+
+    void build_conf_ui();
 };
 
-#endif // GTKMM_EXAMPLEWINDOW_H
+#endif // WINDOW_H
