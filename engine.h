@@ -1,31 +1,39 @@
 #ifndef ENGINE
 #define ENGINE
 
-typedef struct vec
-{
+#include <vector>
+
+typedef struct vec {
     float x;
     float y;
 } Vector;
 
-class Engine
-{
+class Engine {
 public:
-    Engine();
+    Engine(std::vector <Vector> position,
+           std::vector <Vector> velocity,
+           std::vector<float> mass,
+           float G,
+           float delta,
+           int steps_per_frame);
+
     virtual ~Engine();
 
     void updateCoordinates();
+
     Vector getCoordinates(int id);
 
 protected:
-    Vector position[3];
-    Vector velocity[3];
-    float mass[3];
+    std::vector <Vector> position;
+    std::vector <Vector> velocity;
+    std::vector<float> mass;
     float G;
     float delta;
     int steps_per_frame;
 
     // calculates net acceleration for obj i
     Vector F(int i);
+
     void calculateStep();
 };
 

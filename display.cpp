@@ -6,22 +6,18 @@
 #include <iostream>
 
 Display::Display()
-    : running(false), engine(NULL)
-{   
-    // toggle_loop();
-}
-
-void Display::start_loop()
-{
+        : running(true), engine(NULL) {
     Glib::signal_timeout().connect(sigc::mem_fun(*this, &Display::on_timeout), 16);
 }
 
-Display::~Display()
-{
+Display::~Display() {
 }
 
-bool Display::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
-{
+void Display::setEngine(std::shared_ptr <Engine> engine) {
+    this->engine = engine;
+}
+
+bool Display::on_draw(const Cairo::RefPtr <Cairo::Context> &cr) {
 
     Vector position;
     Gtk::Allocation allocation = get_allocation();
@@ -58,17 +54,16 @@ bool Display::on_draw(const Cairo::RefPtr<Cairo::Context> &cr)
     return true;
 }
 
-bool Display::on_timeout()
-{
+bool Display::on_timeout() {
     // force our program to redraw the entire Display.
     if (!running)
         return false;
 
-    engine->updateCoordinates();
+    if (engine != NULL)
+        engine->updateCoordinates();
 
     auto win = get_window();
-    if (win)
-    {
+    if (win) {
         Gdk::Rectangle r(0, 0, get_allocation().get_width(),
                          get_allocation().get_height());
         win->invalidate_rect(r, false);
